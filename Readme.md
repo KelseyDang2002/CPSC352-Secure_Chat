@@ -5,8 +5,7 @@ Currently only have the default server / client python socket code on the repo.
 ## Requirements
 
 In this project you are to implement a system which enables a group of users to chat securely.
-All users are registered with the chat server. When the user wants to chat with another reg-
-istered user, he first connects to the chat server and enters his/her user name and password.
+All users are registered with the chat server. When the user wants to chat with another registered user, he first connects to the chat server and enters his/her user name and password.
 The server verifies the user name and password, and if correct, the user’s status is changed to
 “online“. Next, the user may enter the user ids of users with whom he wishes to chat (could be
 more then one). At any given time the user should be able to check what other users are online
