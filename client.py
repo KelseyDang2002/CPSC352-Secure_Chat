@@ -1,4 +1,5 @@
 import socket
+import threading
 
 # Server's IP address
 SERVER_IP = "127.0.0.1"
@@ -12,13 +13,30 @@ cliSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Attempt to connect to the server
 cliSock.connect((SERVER_IP, SERVER_PORT))
 
-# Send the message to the server
-msg = input("Please enter a message to send to the server: ")
+# Authenticate user
+authenticated = False
+while not authenticated:
+    response = cliSock.recv(1024).decode()
+    print(response)
+    if response == "Enter your username and password: ":
+        username = input("username: ")
+        password = input("password: ")
+        user_pass = username + "," + password
+        print("user_pass: ", user_pass)
+        cliSock.send(user_pass.encode())
+    else:
+        if response == "Authentication successful. You are now online.":
+            authenticated = True
+        else:
+            print("Invalid username or password. Please try again.")
 
-# Send the message to the server
-# NOTE: the user input is of type string
-# Sending data over the socket requires.
-# First converting the string into bytes.
-# encode() function achieves this.
-cliSock.send(msg.encode())
+# Main chat loop
+while True:
+    response = cliSock.recv(1024).decode()
+    print(response)
+    users_to_invite = input()
+    cliSock.send(users_to_invite.encode())
+    print(cliSock.recv(1024).decode())
+    invite = input("Enter the user ids of users you wish to invite to chat (comma-separated): ")
+    cliSock.send(invite.encode())
 
