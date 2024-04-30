@@ -17,14 +17,12 @@ achieve secure key distribution you must encrypt the symmetric key using the pub
 respective users (you may assume that server knows the public keys of all users). If one of the
 specified users is not online, the requesting user is notified about this.
 
-After the encrypted symmetric key has been distributed to all users, the users decrypt the sym-
-metric key using their private keys, and the chat session may begin. All messages exchanged
+After the encrypted symmetric key has been distributed to all users, the users decrypt the symmetric key using their private keys, and the chat session may begin. All messages exchanged
 during the chat must be encrypted using the symmetric key provided by the server and must be
 delivered to all users participating in the chat. Any user may choose to leave the conversation.
 If the user disconnects from the chat server, his status should be changed to “offline“. All users
 who are connected to the server, must have a way to check whether a given user is online.
 You do not need to support multiple chat sessions.
 
-Your implementation must provide both confidentiality and digital signature. For digital sig-
-nature you must provide the user with a choice of using RSA or Digital Signature Algorithm
+Your implementation must provide both confidentiality and digital signature. For digital signature you must provide the user with a choice of using RSA or Digital Signature Algorithm
 (DSA; https://bit.ly/2TvvGSt). Both must digital signature schemes must be supported.
