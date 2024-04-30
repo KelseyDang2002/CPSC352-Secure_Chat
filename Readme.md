@@ -4,6 +4,10 @@ Currently only have the default server / client python socket code on the repo.
 
 ## Requirements
 
+pip3 install bcrypt
+
+## Project Instructions
+
 In this project you are to implement a system which enables a group of users to chat securely.
 All users are registered with the chat server. When the user wants to chat with another registered user, he first connects to the chat server and enters his/her user name and password.
 The server verifies the user name and password, and if correct, the user’s status is changed to
