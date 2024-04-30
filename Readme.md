@@ -1,6 +1,10 @@
 # Secure Chat
 
-Currently only have the default server / client python socket code on the repo.
+Currently only have user authentication setup, as well as a skeleton of the rest of the features.
+
+## Members
+
+-Michael Carey
 
 ## Requirements
 
