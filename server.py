@@ -1,38 +1,67 @@
 import socket
+import sys
+import threading
+from users import serverAuthenticateUser
+from sendReceive import recvAll
+from secureChat import serverSecureChat
+from userStatus import serverUserStatus, serverUserStatusAll
 
-####### A SIMPLE ILLUSTRATION OF THE TCP SERVER #######
 
-# The port number on which to listen for incoming
-# connections.
-PORT_NUMBER = 1235
+# Main function, is called at end of program
+def main():
+    listenPort = str()
+    # Open socket for incoming connection from client with desired port #
+    if len(sys.argv) < 2:
+        print("\nCorrect format: python", sys.argv[0], "<server port>\n")
+        print("Default format: python", sys.argv[0], "1235\n")
+    else:
+        listenPort = sys.argv[1]
+    welcomeSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    welcomeSock.bind(("", int(listenPort)))
+    welcomeSock.listen(1)
 
-# Create a socket
-serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    # Forever wait for incoming connection from client
+    while True:
+        print("\nWaiting for connection...\n")
+        clientSock, addr = welcomeSock.accept()
+        print("Control connection accepted from client:", addr, "\n")
 
-# Associate the socket with the port
-serverSock.bind(('', PORT_NUMBER)) 
+        # Start a new thread for each client
+        client_thread = threading.Thread(target=handle_client, args=(clientSock, addr))
+        client_thread.start()
 
-# Start listening for incoming connections (we can have
-# at most 100 connections waiting to be accepted before
-# the server starts rejecting new connections)
-serverSock.listen(100)
 
-# Keep accepting connections forever
-while True:
+def handle_client(clientSock, addr):
 
-	print("Waiting for clients to connect...")
-	
-	# Accept a waiting connection
-	cliSock, cliInfo = serverSock.accept()
-	
-	print("Client connected from: " + str(cliInfo))
-	
-	# Receive the data the client has to send.
-	# This will receive at most 1024 bytes
-	cliMsg = cliSock.recv(1024)
+    # Authenticate user
+    print("Authenticating user...\n")
+    authenticated = False
+    while not authenticated:
+        authenticated, username = serverAuthenticateUser(clientSock)
 
-	print("Client sent " + str(cliMsg.decode()))
+    print("\n" + username + " Authenticated!\n")
 
-	
-	# Hang up the client's connection
-	cliSock.close()
+    # Receive command from client through control connection
+    # and call a funcion accordingly
+    while True:
+        command = str()
+        commandSize = str()
+        commandSize = recvAll(clientSock, 10)
+        if commandSize.decode():
+            command = recvAll(clientSock, int(commandSize.decode())).decode()
+        if command == "chat":
+            serverSecureChat(clientSock, addr)
+        if command == "status":
+            serverUserStatus(clientSock, addr)
+        if command == "all":
+            serverUserStatusAll(clientSock, addr)
+        if command == "quit":
+            break
+
+    clientSock.close()
+    print("\nControl connection closed.\n")
+    print("Bye " + username + " :D\n")
+    return
+
+
+main()
