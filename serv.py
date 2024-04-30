@@ -6,6 +6,7 @@ def main():
     # Open socket for incoming connection from client with desired port #
     if len(sys.argv) < 2:
         print("\nCorrect format: python", sys.argv[0], "<server port>\n")
+        print("Default format: python", sys.argv[0], "1235\n")
     else:
         listenPort = sys.argv[1]
     welcomeSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,21 +27,21 @@ def main():
           commandSize = recvAll(clientSock, 10)
           if commandSize.decode():
             command = recvAll(clientSock, int(commandSize.decode())).decode()
-          if command == 'put':
-            downloadFile(clientSock, addr)
-          if command == 'get':
-            uploadFile(clientSock, addr)
-          if command == 'ls':
-            dirList(clientSock, addr)
+          if command == 'chat':
+            secureChat(clientSock, addr)
+          if command == 'status':
+            userStatus(clientSock, addr)
+          if command == 'all':
+            userStatusAll(clientSock, addr)
           if command == 'quit':
              break
 
         clientSock.close()
-        print("Control connection closed.\n")
-        print("Bye.\n")
+        print("\nControl connection closed.\n")
+        print("Bye :D\n")
         return
 
-# Receive incoming bytes (including command, ephemeral port and file data)
+# Receive incoming bytes (including command, ephemeral port and other data)
 def recvAll(clientSock, numBytes):
   data = str()
   tmpData = str()
@@ -51,6 +52,17 @@ def recvAll(clientSock, numBytes):
         break
      data += tmpData
   return data
+
+# Send data to server using control connection socket
+def sendData(dataSock, data):
+    dataSizeStr = str(len(str(data)))
+    while len(dataSizeStr) < 10:
+        dataSizeStr = "0" + dataSizeStr
+    data = dataSizeStr.encode() + str(data).encode()
+    numSent = 0 
+    while len(data) > numSent:
+        numSent += dataSock.send(data[numSent:])
+    return
 
 # Server retrieves ephemeral port and creates data connection when requested by client
 # (ephemeral port generated and submited by client along with the request)
@@ -63,73 +75,42 @@ def createDataConnection(clientSock, addr):
     dataSock.connect((addr[0], ephemeralPort))
     return dataSock, ephemeralPort
 
-# Get file name for files being uploaded or downloaded by client
-def getFileName(clientSock):
-    FileName = str()
-    FileNameSize = str()
-    FileNameSize = recvAll(clientSock, 10)
-    FileName = recvAll(clientSock, int(FileNameSize.decode())).decode()
-    return FileName
+# Get username from client
+def getUserName(clientSock):
+    userName = str()
+    userNameSize = str()
+    userNameSize = recvAll(clientSock, 10)
+    userName = recvAll(clientSock, int(userNameSize.decode())).decode()
+    return userName
 
-# Receive file that client is uploading
-def downloadFile(clientSock, addr):
-    fileName = getFileName(clientSock)
+# Setup secure chat
+def secureChat(clientSock, addr):
+    userName = getUserName(clientSock)
     dataSock, ephemeralPort = createDataConnection(clientSock, addr)  # Create data connection and connect to client to begin data transfer
     print("Data connection successfully established with client on ephemeral port #", ephemeralPort ,"\n")
-    fileData = str()
-    fileSize = str()
-    fileSize = recvAll(dataSock, 10)
-    fileData = recvAll(dataSock, int(fileSize.decode()))
-    print("Receiving...\n")
-    with open(fileName, "wb") as file:
-       file.write(fileData)
-    file.close()
-    print("File transfer completed.\n")
-    print("File name:", fileName, "\n")
-    print("Bytes received from client:", int(fileSize.decode()), "\n")
+    data = "Secure Chat functionality under construction"
+    sendData(dataSock, data)
     dataSock.close()
     print("Data connection to client closed.\n")
     return
 
-# Send file that client is downloading
-def uploadFile(clientSock, addr):
-    fileName = getFileName(clientSock)
+# Check status of a user
+def userStatus(clientSock, addr):
+    userName = getUserName(clientSock)
     dataSock, ephemeralPort = createDataConnection(clientSock, addr)  # Create data connection and connect to client to begin data transfer
     print("Data connection successfully established with client on ephemeral port #", ephemeralPort ,"\n")
-    fileObj = open(fileName, "rb")
-    print("Sending...\n")
-    while True:
-        fileData = fileObj.read(65536)
-        if fileData:
-            dataSizeStr = str(len(fileData))
-            while len(dataSizeStr) < 10:
-                dataSizeStr = "0" + dataSizeStr
-            fileData = dataSizeStr.encode() + fileData
-            numSent = 0
-            while len(fileData) > numSent:
-                numSent += dataSock.send(fileData[numSent:])  # Using server socket for data connection established by server to send data back to client
-        else:
-            break
-    print("File transfer completed.\n")
-    print("File name:", fileName, "\n")
-    print("Bytes sent to client:", numSent, "\n")
+    data = "Status functionality under construction"
+    sendData(dataSock, data)
     dataSock.close()
     print("Data connection to client closed.\n")
     return
 
-# Send list of files in server file directory (server_files) to client
-def dirList(clientSock, addr):
+# Check status of all registered users
+def userStatusAll(clientSock, addr):
   dataSock, ephemeralPort = createDataConnection(clientSock, addr)  # Create data connection and connect to client to begin data transfer
   print("Data connection successfully established with client on ephemeral port #", ephemeralPort ,"\n")
-  print("Sending...\n")
-  for fileName in os.listdir("."):  # "commands" module has been depreciated in Python 3, using "os" instead
-    fileNameSizeStr = str(len(fileName))
-    while len(fileNameSizeStr) < 10:
-        fileNameSizeStr = "0" + fileNameSizeStr
-    fileName = fileNameSizeStr.encode() + str(fileName).encode()
-    numSent = 0
-    while len(fileName) > numSent:
-        numSent += dataSock.send(fileName[numSent:])  # Using server socket for data connection established by server to send data back to client
+  data = "All functionality under construction"
+  sendData(dataSock, data)
   dataSock.close()
   print("Data connection to client closed.\n")
   return
