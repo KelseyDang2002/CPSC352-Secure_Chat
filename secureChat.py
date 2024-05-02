@@ -1,6 +1,6 @@
 from sendReceive import sendData, recvAll
 from getUserName import getUserName
-
+from encryption import encrypt_data, decrypt_data
 
 # Client-side function to create the secure chat between users
 def clientSecureChat(connSock, userName):
