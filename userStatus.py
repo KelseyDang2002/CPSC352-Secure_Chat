@@ -1,6 +1,6 @@
 from sendReceive import sendData, recvAll
 from getUserName import getUserName
-
+from users import USER_STATUS
 
 # Client-side function to check a user's status
 def clientUserStatus(connSock, userName):
@@ -30,15 +30,15 @@ def clientUserStatusAll(connSock):
 # Server-side function to check status of a user
 def serverUserStatus(clientSock, addr):
     userName = getUserName(clientSock)
-    data = "Status functionality under construction"
+    data = USER_STATUS.get(userName, "offline")
     sendData(clientSock, data)
-    print("Status functionality under construction.\n")
+    print(f"Sent status '{data}' to client {addr} for user '{userName}'\n")
     return
 
 
 # Server-side function to check status of all registered users
 def serverUserStatusAll(clientSock, addr):
-    data = "All functionality under construction"
+    data = str(USER_STATUS)
     sendData(clientSock, data)
-    print("Status All functionality under construction.\n")
+    print(f"Sent all user statuses to client {addr}\n")
     return

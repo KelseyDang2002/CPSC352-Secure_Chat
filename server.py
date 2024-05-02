@@ -63,5 +63,4 @@ def handle_client(clientSock, addr):
     print("Bye " + username + " :D\n")
     return
 
-
 main()
