@@ -44,8 +44,6 @@ def handle_client(clientSock, addr):
     # Receive command from client through control connection
     # and call a funcion accordingly
     while True:
-        command = str()
-        commandSize = str()
         commandSize = recvAll(clientSock, 10)
         if commandSize.decode():
             command = recvAll(clientSock, int(commandSize.decode())).decode()
@@ -60,7 +58,9 @@ def handle_client(clientSock, addr):
 
     clientSock.close()
     print("\nControl connection closed.\n")
-    print("Bye " + username + " :D\n")
+    print(f"Bye {username} :D\n")
     return
+
+
 
 main()
