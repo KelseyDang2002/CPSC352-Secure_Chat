@@ -1,98 +1,89 @@
+import threading
 import socket
-import sys
-from sendReceive import sendData
-from users import clientAuthenticateUser
-from secureChat import clientSecureChat
-from userStatus import clientUserStatus, clientUserStatusAll
+from message_utils import send_message, receive_message
 
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(('127.0.0.1', 59000))
 
-# Main function, called at the end
-def main():
-    if len(sys.argv) < 3:
-        print(
-            "\nCorrect format: python3",
-            sys.argv[0],
-            "<server hostname> <server port>\n",
-        )
-        print("Default format: python3", sys.argv[0], "127.0.0.1 1235\n")
-    else:
-        host = sys.argv[1]
-        port = int(sys.argv[2])
-        connSock = controlCONN(host, port)
+def get_credentials():
+    username = input('Enter your username: ')
+    password = input('Enter your password: ')
+    return f'{username}:{password}'
 
-    # Log in User
-    authenticated = False
-    while not authenticated:
-        authenticated, username = clientAuthenticateUser(connSock)
+def print_menu():
+    print("\nMenu:")
+    print("1. chat <users> - Start a chat and invite specified users (e.g., chat user2 user3)")
+    print("2. status <username> - Check if a user is online (e.g., status user1)")
+    print("3. all - List all online users")
+    print("4. join - Join the chat room")
+    print("5. quit - Quit the application")
+    print()
 
-    print("\nUser authenticated. Welcome ", username)
+credentials = get_credentials()
+in_chat = False
+prompt_command = False # This variable prevents the menu from being spammed.
 
-    # Show menu
-    menuCMD()
-
-    # User terminal command handling
+# This thread just listens for messages. It will activate the chat room thread if it gets a Enter or Join message.
+def client_receive():
+    global credentials, in_chat, prompt_command
     while True:
-        userInput = input("\nSecChat> ").split()
-        if len(userInput) > 1:
-            command = userInput[0]
-            userName = userInput[1]
-        elif len(userInput) == 1:
-            command = userInput[0]
-        else:
-            print("\nPlease provide a command.")
-            print("Type 'menu' for a list of appropriate commands")
-            continue
-        if command == "menu":
-            menuCMD()
-        elif command == "chat":
-            if len(userInput) == 2:
-                clientSecureChat(connSock, userName)
+        try:
+            message = receive_message(client).decode('utf-8')
+            if message == "credentials?":
+                send_message(client, credentials.encode('utf-8'))
+            elif message == "Invalid credentials. Try again.":
+                print(message)
+                credentials = get_credentials()
+                send_message(client, credentials.encode('utf-8'))
+            elif message.startswith('Enter a command'):
+                prompt_command = True
+            elif message.startswith('Entering chat room...'):
+                print("Entering chat room...")
+                in_chat = True
+                chat_thread = threading.Thread(target=client_send)
+                chat_thread.start()
+            elif message.startswith('Joining chat room...'):
+                print(message)
+                in_chat = True
+                chat_thread = threading.Thread(target=client_send)
+                chat_thread.start()
             else:
-                print("invalid input: please provide a username")
-        elif command == "status":
-            if len(userInput) == 2:
-                clientUserStatus(connSock, userName)
-            else:
-                print("invalid input: please provide a username")
-        elif command == "all":
-            clientUserStatusAll(connSock)
-        elif command == "quit":
-            quit(connSock)
+                print(message)
+        except Exception as e:
+            print(f'Error: {e}')
+            client.close()
             break
-        else:
-            print("\nInvalid command.")
-            print("Type 'menu' for a list of appropriate commands")
-
-    connSock.close()
-    print("Control connection to the Secure Chat server closed.\n")
-    print("Bye :D\n")
-    return
 
 
-# Control connection function
-def controlCONN(host, port):
-    connSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(f"\nConnecting to the Secure Chat server: ({host}, {port})\n")
-    connSock.connect((host, port))
-    print("Control connection to the Secure Chat server successful.")
-    return connSock
+# This thread only sends messages for the chat room.
+def client_send():
+    global in_chat
+    while in_chat:
+        try:
+            message = f'{credentials.split(":")[0]}: {input("")}'
+            send_message(client, message.encode('utf-8'))
+        except Exception as e:
+            print(f'Error: {e}')
+            client.close()
+            break
 
 
-# Send quit command to server to let server know contoll connection has ended
-def quit(connSock):
-    sendData(connSock, "quit")
-    return
+# This thread only sends commands. When Client enters a chat room shuts off. 
+def command_input():
+    global prompt_command
+    while True:
+        if prompt_command:
+            print_menu()
+            command = input('Enter your choice: ')
+            send_message(client, command.encode('utf-8'))
+            prompt_command = False
 
+receive_thread = threading.Thread(target=client_receive)
+receive_thread.start()
 
-# Function controlling menu command
-def menuCMD():
-    print("\nClient Main Menu:\n")
-    print("menu - list commands")
-    print("chat <username> - initiate secure chat with provided user")
-    print("status <username> - check if provided user is online")
-    print("all - list status of all registered users")
-    print("quit - exit the connection")
-    return
+command_thread = threading.Thread(target=command_input)
+command_thread.start()
 
-
-main()
+# Keep the main thread alive to avoid interpreter shutdown
+receive_thread.join()
+command_thread.join()
