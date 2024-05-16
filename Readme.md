@@ -7,6 +7,7 @@ Currently only have user authentication setup, as well as a skeleton of the rest
 - Michael Carey
 - Alejandro Guerrero
 - Kyle Chan
+- Eric Licea
 
 ## Requirements
 
