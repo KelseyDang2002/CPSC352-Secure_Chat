@@ -9,6 +9,7 @@ Currently only have user authentication setup, as well as a skeleton of the rest
 - Kyle Chan
 - Eric Licea
 - Samir Shivji
+- Michael Rojas
 
 ## Requirements
 

@@ -76,6 +76,10 @@ def command_input():
             print_menu()
             command = input('Enter your choice: ')
             send_message(client, command.encode('utf-8'))
+            if command == 'quit':  # Check if the command is 'quit'
+                print("Disconnecting...")
+                client.close()  # Close the client socket
+                return  # Exit the function and the loop immediately
             prompt_command = False
 
 receive_thread = threading.Thread(target=client_receive)
