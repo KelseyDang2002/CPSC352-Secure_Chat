@@ -28,7 +28,10 @@ def client_receive():
     global credentials, in_chat, prompt_command
     while True:
         try:
-            message = receive_message(client).decode('utf-8')
+            message = receive_message(client)
+            if message is None:
+                break  # Break the loop if no message is received
+            message = message.decode('utf-8')
             if message == "credentials?":
                 send_message(client, credentials.encode('utf-8'))
             elif message == "Invalid credentials. Try again.":
@@ -50,10 +53,11 @@ def client_receive():
             else:
                 print(message)
         except Exception as e:
+            if client.fileno() == -1:  # Check if the client socket is closed
+                break  # Break the loop if the socket is closed
             print(f'Error: {e}')
             client.close()
             break
-
 
 # This thread only sends messages for the chat room.
 def client_send():

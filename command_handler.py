@@ -49,10 +49,7 @@ def handle_commands(client, address, clients, chat_room):
                 online_users = ', '.join(clients.keys())
                 send_message(client, f'Online users: {online_users}'.encode('utf-8'))
             elif command == 'quit':
-                send_message(client, 'Disconnecting...'.encode('utf-8'))
-                if alias in clients:
-                    del clients[alias]
                 client.close()
-                break
+                break  # Exit the loop after closing the client socket
             else:
                 send_message(client, 'Invalid command. Try again.'.encode('utf-8'))
