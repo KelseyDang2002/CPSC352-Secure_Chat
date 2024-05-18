@@ -10,6 +10,7 @@ Currently only have user authentication setup, as well as a skeleton of the rest
 - Eric Licea
 - Samir Shivji
 - Michael Rojas
+- Kelsey Dang
 
 ## Requirements
 
