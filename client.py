@@ -12,11 +12,11 @@ def get_credentials():
 
 def print_menu():
     print("\nMenu:")
-    print("1. chat <users> - Start a chat and invite specified users (e.g., chat user2 user3)")
-    print("2. status <username> - Check if a user is online (e.g., status user1)")
-    print("3. all - List all online users")
-    print("4. join - Join the chat room")
-    print("5. quit - Quit the application")
+    print("\t1. chat <users> - Start a chat and invite specified users (e.g., chat user2 user3)")
+    print("\t2. status <username> - Check if a user is online (e.g., status user1)")
+    print("\t3. all - List all online users")
+    print("\t4. join - Join the chat room")
+    print("\t5. quit - Quit the application")
     print()
 
 credentials = get_credentials()
@@ -72,7 +72,7 @@ def client_send():
             break
 
 
-# This thread only sends commands. When Client enters a chat room shuts off. 
+# This thread only sends commands. When Client enters a chat room shuts off.
 def command_input():
     global prompt_command
     while True:
