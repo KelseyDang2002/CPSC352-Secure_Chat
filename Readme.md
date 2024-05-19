@@ -15,6 +15,7 @@ Currently only have user authentication setup, as well as a skeleton of the rest
 ## Requirements
 
 pip3 install bcrypt
+
 pip3 install cryptodomex
 
 ## Project Instructions
