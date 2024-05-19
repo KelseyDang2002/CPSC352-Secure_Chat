@@ -26,7 +26,3 @@ def pad(data):
 def unpad(data):
     padding = data[-1]
     return data[:-padding]
-
-def generateKey():
-    key = os.urandom(16)
-    return key

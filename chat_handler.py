@@ -1,5 +1,5 @@
 from message_utils import send_message, receive_message
-
+from aes_encryption import aes_encrypt_data, aes_decrypt_data
 
 # This function sends the message to all users in the chat room.
 def broadcast(message, clients, chat_room):
