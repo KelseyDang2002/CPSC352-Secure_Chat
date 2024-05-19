@@ -1,5 +1,5 @@
 from Cryptodome.Cipher import AES
-
+import os
 
 # Function to encrypt the data
 def encrypt_data(data, key):
@@ -26,3 +26,7 @@ def pad(data):
 def unpad(data):
     padding = data[-1]
     return data[:-padding]
+
+def generateKey():
+    key = os.urandom(16)
+    return key
