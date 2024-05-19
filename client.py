@@ -1,6 +1,7 @@
 import threading
 import socket
 from message_utils import send_message, receive_message
+from aes_encryption import aes_encrypt_data
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('127.0.0.1', 59000))
@@ -22,10 +23,11 @@ def print_menu():
 credentials = get_credentials()
 in_chat = False
 prompt_command = False # This variable prevents the menu from being spammed.
+global key
 
 # This thread just listens for messages. It will activate the chat room thread if it gets a Enter or Join message.
 def client_receive():
-    global credentials, in_chat, prompt_command
+    global credentials, in_chat, prompt_command, key
     while True:
         try:
             message = receive_message(client)
@@ -40,7 +42,7 @@ def client_receive():
                 send_message(client, credentials.encode('utf-8'))
             elif message.startswith('Enter a command'):
                 prompt_command = True
-            elif message.startswith('Verify chat room...'):
+            elif message.startswith('Start Chatroom Verify'):
                 # Send encrypted symmetric key to user
                 message = receive_message(client).decode('utf-8')
                 print ("Decrypt the following message using your private key:")
@@ -51,18 +53,25 @@ def client_receive():
                 message = receive_message(client).decode('utf-8')
                 if message.startswith('Success'):
                     print("Entering chat room...")
+                    key = eval(key_attempt)
                     in_chat = True
                     chat_thread = threading.Thread(target=client_send)
                     chat_thread.start()
-                else:
-                    message = receive_message(client).decode('utf-8')
-                    print (message)
-                    break
-            elif message.startswith('Joining chat room...'):
-                print(message)
-                in_chat = True
-                chat_thread = threading.Thread(target=client_send)
-                chat_thread.start()
+                print ('Incorrect key.')
+            elif message.startswith('Join Verify'):
+                message = receive_message(client).decode('utf-8')
+                print ("Decrypt the following message using your private key:")
+                print (message)
+                key_attempt = input("Please enter the decrypted key: ")
+                # Send decoded symmetic key to server
+                send_message(client, key_attempt.encode('utf-8'))
+                message = receive_message(client).decode('utf-8')
+                if message.startswith('Success'):
+                    print("Entering chat room...")
+                    key = eval(key_attempt)
+                    in_chat = True
+                    chat_thread = threading.Thread(target=client_send)
+                    chat_thread.start()
             else:
                 print(message)
         except Exception as e:
@@ -74,10 +83,11 @@ def client_receive():
 
 # This thread only sends messages for the chat room.
 def client_send():
-    global in_chat
+    global in_chat, key
     while in_chat:
         try:
             message = f'{credentials.split(":")[0]}: {input("")}'
+            #message = aes_encrypt_data(message, key)
             send_message(client, message.encode('utf-8'))
         except Exception as e:
             print(f'Error: {e}')

@@ -4,9 +4,13 @@ import os
 
 
 def rsa_encrypt_data(data, alias):
+    # Print key to server console
+    # REMOVE THIS LATER
+    print(data)
+    
+    
     filename = "public_" + alias + ".pem"
     file_path = os.path.join("server_keys", filename)
-    print (data)
     with open (file_path, "rb") as pub_file:
         contents = pub_file.read()
         puKey = RSA.importKey(contents)

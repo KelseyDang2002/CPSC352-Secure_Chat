@@ -1,12 +1,15 @@
 from Cryptodome.Cipher import AES
-import os
+from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import unpad
+
 
 # Function to encrypt the data
 def aes_encrypt_data(data, key):
-    data = pad(data)
     encCipher = AES.new(key, AES.MODE_ECB)
-    cipherText = encCipher.encrypt(data)
-    
+    msgBytes = data.encode('utf-8')
+    paddedMsg = pad(msgBytes, AES.block_size)
+    cipherText = encCipher.encrypt(paddedMsg)
+
     return cipherText
 
 # Function to decrypt the data
@@ -16,13 +19,3 @@ def aes_decrypt_data(cipherText, key):
     plainText = unpad(plainText)
     
     return plainText
-
-# Function to pad data to make its length a multiple of 16
-def pad(data):
-    padding = AES.block_size - (len(data) % AES.block_size)
-    return data + bytes([padding] * padding)
-
-# Function to remove padding from data
-def unpad(data):
-    padding = data[-1]
-    return data[:-padding]

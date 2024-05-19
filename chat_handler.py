@@ -1,5 +1,4 @@
 from message_utils import send_message, receive_message
-from aes_encryption import aes_encrypt_data, aes_decrypt_data
 
 # This function sends the message to all users in the chat room.
 def broadcast(message, clients, chat_room):
@@ -8,7 +7,7 @@ def broadcast(message, clients, chat_room):
         send_message(client, message.encode('utf-8'))
 
 # This function listens for incoming messages then broadcasts.
-def handle_chat(client, alias, clients, chat_room, key):
+def handle_chat(client, alias, clients, chat_room):
     broadcast(f'{alias} has joined the chat room!', clients, chat_room)
     while True:
         try:
