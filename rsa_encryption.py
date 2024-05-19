@@ -12,7 +12,6 @@ def rsa_encrypt_data(data, alias):
         puKey = RSA.importKey(contents)
     cipher = PKCS1_v1_5.new(puKey)
     ciphertext = cipher.encrypt(data)
-    print("Ciphertext: ", ciphertext)
     return ciphertext
 
 

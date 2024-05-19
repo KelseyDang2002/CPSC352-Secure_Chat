@@ -8,7 +8,7 @@ def broadcast(message, clients, chat_room):
         send_message(client, message.encode('utf-8'))
 
 # This function listens for incoming messages then broadcasts.
-def handle_chat(client, alias, clients, chat_room):
+def handle_chat(client, alias, clients, chat_room, key):
     broadcast(f'{alias} has joined the chat room!', clients, chat_room)
     while True:
         try:

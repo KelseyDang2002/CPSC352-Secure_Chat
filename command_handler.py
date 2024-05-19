@@ -18,7 +18,7 @@ def handle_commands(client, address, clients, chat_room):
         clients[alias] = client
         print(f'The alias of this client is {alias}')
         while True:
-            send_message(client, 'Enter a command '.encode('utf-8'))
+            send_message(client, 'Enter a command'.encode('utf-8'))
             command = receive_message(client).decode('utf-8').strip()
 
             if command.startswith('chat '):
@@ -43,6 +43,8 @@ def handle_commands(client, address, clients, chat_room):
                             send_message(clients[user], f'\n{alias} has invited you to the chat room. Type "join" to join'.encode('utf-8'))
                         handle_chat(client, alias, clients, chat_room)
                         break
+                    else:
+                        send_message(client, 'Incorrect symmetric key.'.encode('utf-8'))
                 
             elif command == 'join':
                 if alias not in chat_room:

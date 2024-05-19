@@ -41,10 +41,12 @@ def client_receive():
             elif message.startswith('Enter a command'):
                 prompt_command = True
             elif message.startswith('Verify chat room...'):
+                # Send encrypted symmetric key to user
                 message = receive_message(client).decode('utf-8')
                 print ("Decrypt the following message using your private key:")
                 print (message)
                 key_attempt = input("Please enter the decrypted key: ")
+                # Send decoded symmetic key to server
                 send_message(client, key_attempt.encode('utf-8'))
                 message = receive_message(client).decode('utf-8')
                 if message.startswith('Success'):
@@ -52,6 +54,10 @@ def client_receive():
                     in_chat = True
                     chat_thread = threading.Thread(target=client_send)
                     chat_thread.start()
+                else:
+                    message = receive_message(client).decode('utf-8')
+                    print (message)
+                    break
             elif message.startswith('Joining chat room...'):
                 print(message)
                 in_chat = True
