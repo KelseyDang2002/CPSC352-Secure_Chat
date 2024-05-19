@@ -40,11 +40,18 @@ def client_receive():
                 send_message(client, credentials.encode('utf-8'))
             elif message.startswith('Enter a command'):
                 prompt_command = True
-            elif message.startswith('Entering chat room...'):
-                print("Entering chat room...")
-                in_chat = True
-                chat_thread = threading.Thread(target=client_send)
-                chat_thread.start()
+            elif message.startswith('Verify chat room...'):
+                message = receive_message(client).decode('utf-8')
+                print ("Decrypt the following message using your private key:")
+                print (message)
+                key_attempt = input("Please enter the decrypted key: ")
+                send_message(client, key_attempt.encode('utf-8'))
+                message = receive_message(client).decode('utf-8')
+                if message.startswith('Success'):
+                    print("Entering chat room...")
+                    in_chat = True
+                    chat_thread = threading.Thread(target=client_send)
+                    chat_thread.start()
             elif message.startswith('Joining chat room...'):
                 print(message)
                 in_chat = True

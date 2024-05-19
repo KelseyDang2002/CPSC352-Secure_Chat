@@ -5,7 +5,8 @@ import os
 def rsa_decrypt_data(data, prv_file):
     cipher = PKCS1_v1_5.new(prv_file)
     plaintext = cipher.decrypt(eval(data), 1000)
-    print("Decrypted: ", plaintext)
+    print("Decrypted:")
+    print(plaintext)
 
 if __name__ == "__main__":
     data = input("Please enter the data you would like to decrypt: ")

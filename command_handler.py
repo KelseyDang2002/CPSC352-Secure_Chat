@@ -29,12 +29,16 @@ def handle_commands(client, address, clients, chat_room):
                 if users_offline:
                     send_message(client, f'These users are not online: {", ".join(users_offline)}'.encode('utf-8'))
                 else:
+                    # Verification
+                    send_message(client, 'Verify chat room...'.encode('utf-8'))
                     rsa_key = str(rsa_encrypt_data(key, alias))
                     send_message(client, rsa_key.encode('utf-8'))
                     key_response = receive_message(client).decode('utf-8')
-                    if key_response == key:
+
+                    # Join chat room
+                    if key_response == str(key):
+                        send_message(client, 'Success'.encode('utf-8'))
                         chat_room.append(alias)
-                        send_message(client, 'Entering chat room...'.encode('utf-8'))
                         for user in users_online:
                             send_message(clients[user], f'\n{alias} has invited you to the chat room. Type "join" to join'.encode('utf-8'))
                         handle_chat(client, alias, clients, chat_room)
