@@ -2,7 +2,7 @@ from Cryptodome.Cipher import AES
 import os
 
 # Function to encrypt the data
-def encrypt_data(data, key):
+def aes_encrypt_data(data, key):
     data = pad(data)
     encCipher = AES.new(key, AES.MODE_ECB)
     cipherText = encCipher.encrypt(data)
@@ -10,7 +10,7 @@ def encrypt_data(data, key):
     return cipherText
 
 # Function to decrypt the data
-def decrypt_data(cipherText, key):
+def aes_decrypt_data(cipherText, key):
     decCipher = AES.new(key, AES.MODE_ECB)
     plainText = decCipher.decrypt(cipherText)
     plainText = unpad(plainText)
