@@ -129,8 +129,8 @@ Please enter the decrypted key: b'i\xb0\x00\xd8\x89\x88\x93MI\xcc\xeb\x1cI>\xf1\
 Entering chat room...
 Joining chat room...
 user1 has joined the chat room!
-
 ```
+9. Close the terminal to leave the chat room.
 
 #### "status" Command
 The "status" command checks if a specified user is online.
