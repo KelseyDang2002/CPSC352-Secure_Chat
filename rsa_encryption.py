@@ -3,12 +3,7 @@ from Crypto.Cipher import PKCS1_v1_5
 import os
 
 
-def rsa_encrypt_data(data, alias):
-    # Print key to server console
-    # REMOVE THIS LATER
-    print(data)
-    
-    
+def rsa_encrypt_data(data, alias):   
     filename = "public_" + alias + ".pem"
     file_path = os.path.join("server_keys", filename)
     with open (file_path, "rb") as pub_file:
