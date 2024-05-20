@@ -16,6 +16,7 @@ def aes_encrypt_data(data, key):
 def aes_decrypt_data(cipherText, key):
     decCipher = AES.new(key, AES.MODE_ECB)
     plainText = decCipher.decrypt(cipherText)
-    plainText = unpad(plainText)
+    plainText = unpad(plainText, AES.block_size)
+    plainText = plainText.decode('utf-8')
     
     return plainText

@@ -1,7 +1,7 @@
 import threading
 import socket
 from message_utils import send_message, receive_message
-from aes_encryption import aes_encrypt_data
+from aes_encryption import aes_encrypt_data, aes_decrypt_data
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('127.0.0.1', 59000))
@@ -57,7 +57,9 @@ def client_receive():
                     in_chat = True
                     chat_thread = threading.Thread(target=client_send)
                     chat_thread.start()
-                print ('Incorrect key.')
+                else:
+                    print ('Incorrect key.')
+                
             elif message.startswith('Join Verify'):
                 message = receive_message(client).decode('utf-8')
                 print ("Decrypt the following message using your private key:")
@@ -73,6 +75,8 @@ def client_receive():
                     chat_thread = threading.Thread(target=client_send)
                     chat_thread.start()
             else:
+                if message.startswith('b\''):
+                    message = aes_decrypt_data(eval(message), key)
                 print(message)
         except Exception as e:
             if client.fileno() == -1:  # Check if the client socket is closed
@@ -87,7 +91,7 @@ def client_send():
     while in_chat:
         try:
             message = f'{credentials.split(":")[0]}: {input("")}'
-            #message = aes_encrypt_data(message, key)
+            message = str(aes_encrypt_data(message, key))
             send_message(client, message.encode('utf-8'))
         except Exception as e:
             print(f'Error: {e}')
