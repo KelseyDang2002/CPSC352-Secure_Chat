@@ -74,8 +74,10 @@ def client_receive():
                     in_chat = True
                     chat_thread = threading.Thread(target=client_send)
                     chat_thread.start()
+                else:
+                    print ('Incorrect key.')
             else:
-                if message.startswith('b\''):
+                if message.startswith('b\'') or message.startswith('b\"'):
                     message = aes_decrypt_data(eval(message), key)
                 print(message)
         except Exception as e:
